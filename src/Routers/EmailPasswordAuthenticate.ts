@@ -1,0 +1,72 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { AuthRequest } from '@interface/Auth.js';
+import User from '@Schema/User.js';
+import { generateToken } from '@utils/generateToken.js';
+import bcrypt from 'bcryptjs';
+import express from 'express';
+
+const emailPasswordRouter = express.Router();
+
+emailPasswordRouter.post('/login', async (req, res) => {
+    const request_body = req.body as AuthRequest;
+    const email = request_body.email;
+    const password:string = request_body.password;
+    console.log(email, 'email', password);
+    if (!email || !password) {
+        return res.status(401).send('Invalid request');
+    }
+    const user = await User.findOne({
+        email,
+        type: 'email-password'
+    }).exec();
+    if (!user) {
+        return res.status(401).json({
+            message: 'User not found'
+        });
+    }
+    const isValidPassword = await bcrypt.compare(password, (user.password ?? '') as string);
+    if(!isValidPassword) {
+        return res.status(401).json({
+            message: 'Invalid password'
+        });
+    }
+    const token = generateToken({
+        email: user.email
+    });
+    res.status(200).json({
+        data: {
+            token
+        },
+        message: 'User Login Successful'
+    })
+});
+
+emailPasswordRouter.post('/sign-up', async (req, res) => {
+    const request_body = req.body as AuthRequest;
+    const email = request_body.email;
+    const password = request_body.password;
+    if (!email || !password) {
+        return res.status(401).send('Invalid request');
+    }
+    const user = await User.findOne({
+        email,
+        type: 'email-password'
+    }).exec();
+    if (user) {
+        return res.status(401).json({
+            message: 'User already exists'
+        });
+    }
+    await User.insertOne({
+        email,
+        password,
+        type: 'email-password'
+    });
+    res.status(201).json({
+        message: 'User Created Succesfully'
+    })
+});
+
+export default emailPasswordRouter;
