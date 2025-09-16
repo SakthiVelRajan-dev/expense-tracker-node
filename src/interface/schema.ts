@@ -1,6 +1,6 @@
 export interface IUser extends Document {
-  name?: string;
   email: string;
-  type: 'oAuth' | 'email-password';
+  name?: string;
   password?: string;
+  type: 'email-password' | 'oAuth';
 }

@@ -6,6 +6,6 @@ import { Profile } from 'passport-google-oauth20';
 // to the Express.User type, so you can access them on req.user
 declare global {
   namespace Express {
-    export interface User extends Profile {}
+    export type User = Profile
   }
 }

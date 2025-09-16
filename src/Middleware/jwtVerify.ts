@@ -8,12 +8,13 @@ export const jwtVerify =(req:Request, res: Response, next: NextFunction) => {
             return res.status(401).send('Unauthoized');
         }
         // jwt secret key
-        const isValidToken = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET!);
+        const isValidToken = jwt.verify(token.replace('Bearer ', ''), process.env.JWT_SECRET ?? '');
         if (!isValidToken) {
             return res.status(403).send('Invalid Bearer Token');
         }
         next();
-    } catch (err) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (_err) {
         return res.status(403).send('Invalid Bearer Token');
     }
 }

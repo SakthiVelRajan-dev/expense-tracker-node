@@ -7,7 +7,17 @@
         "strict": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true
+        "forceConsistentCasingInFileNames": true,
+        "baseUrl": ".",
+        "paths": {
+          "@Config/*": ["src/Config/*"],
+          "@Constants/*": ["src/Constants/*"],
+          "@interface/*": ["src/interface/*"],
+          "@Middleware/*": ["src/Middleware/*"],
+          "@Router/*": ["src/Routers/*"],
+          "@Schema/*": ["src/Schema/*"],
+          "@utils/*": ["src/utils/*"]
+        }
       },
       "include": ["src/**/*"],
       "exclude": ["node_modules"]

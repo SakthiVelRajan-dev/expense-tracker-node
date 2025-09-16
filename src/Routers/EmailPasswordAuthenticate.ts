@@ -1,13 +1,18 @@
-import express from 'express';
-import User from '../Schema/User.js';
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { AuthRequest } from '@interface/Auth.js';
+import User from '@Schema/User.js';
+import { generateToken } from '@utils/generateToken.js';
 import bcrypt from 'bcryptjs';
-import { generateToken } from '../utils/generateToken.js';
+import express from 'express';
 
 const emailPasswordRouter = express.Router();
 
 emailPasswordRouter.post('/login', async (req, res) => {
-    const email = req.body?.email;
-    const password = req.body?.password;
+    const request_body = req.body as AuthRequest;
+    const email = request_body.email;
+    const password:string = request_body.password;
     console.log(email, 'email', password);
     if (!email || !password) {
         return res.status(401).send('Invalid request');
@@ -21,7 +26,7 @@ emailPasswordRouter.post('/login', async (req, res) => {
             message: 'User not found'
         });
     }
-    const isValidPassword = bcrypt.compare(password, user.password!);
+    const isValidPassword = await bcrypt.compare(password, (user.password ?? '') as string);
     if(!isValidPassword) {
         return res.status(401).json({
             message: 'Invalid password'
@@ -31,16 +36,17 @@ emailPasswordRouter.post('/login', async (req, res) => {
         email: user.email
     });
     res.status(200).json({
-        message: 'User Login Successful',
         data: {
             token
-        }
+        },
+        message: 'User Login Successful'
     })
 });
 
 emailPasswordRouter.post('/sign-up', async (req, res) => {
-    const email = req.body?.email;
-    const password = req.body?.password;
+    const request_body = req.body as AuthRequest;
+    const email = request_body.email;
+    const password = request_body.password;
     if (!email || !password) {
         return res.status(401).send('Invalid request');
     }
@@ -53,18 +59,14 @@ emailPasswordRouter.post('/sign-up', async (req, res) => {
             message: 'User already exists'
         });
     }
-    const newUser = await User.insertOne({
+    await User.insertOne({
         email,
         password,
         type: 'email-password'
     });
-    if(newUser) {
-        res.status(201).json({
-            message: 'User Created Succesfully'
-        })
-    } else {
-        res.status(500).send('Internal server error')
-    }
+    res.status(201).json({
+        message: 'User Created Succesfully'
+    })
 });
 
 export default emailPasswordRouter;
