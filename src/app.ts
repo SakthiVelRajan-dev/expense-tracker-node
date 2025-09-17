@@ -6,7 +6,9 @@ import logRouter from '@Router/LogRoutes.js';
 import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
+import fs from 'fs-extra';
 import passport from 'passport';
+import path from 'path';
 
 const app = express();
 
@@ -45,6 +47,16 @@ app.get('/',jwtVerify, (_req, res) => {
 
 app.use('/log', logRouter);
 
+app.get('/clear-logs',async (_req, res) => {
+     const logsDirPath = path.join(process.cwd(), 'src', 'logs');
+     
+    await fs.emptyDir(logsDirPath);
+
+    res.status(200).json({
+        message: 'Logs deleted successfully'
+    })
+});
+
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on ${process.env.PORT ?? ''}`)
-})
+});
