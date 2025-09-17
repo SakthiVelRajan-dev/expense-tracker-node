@@ -50,6 +50,7 @@ app.use('/log', logRouter);
 app.get('/clear-logs',async (_req, res) => {
      const logsDirPath = path.join(process.cwd(), 'src', 'logs');
      
+     
     await fs.emptyDir(logsDirPath);
 
     res.status(200).json({
