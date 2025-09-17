@@ -27,6 +27,11 @@ const userSchema = new Schema<IUserDocument, IUserModel>({
         },
         type: String,
     },
+    role: {
+        default: 'user',
+        enum: ['user', 'log_user', 'super_admin'],
+        type: String
+    },
     type: {
         default: 'email-password',
         enum: ['oAuth', 'email-password'],
@@ -35,8 +40,11 @@ const userSchema = new Schema<IUserDocument, IUserModel>({
 }, { timestamps: true })
 
 userSchema.pre('save', async function (next){
-    if (this.isModified('password') && this.type === 'email-password') {
+    if (this.isModified('password') && this.type === 'email-password' && this.role === 'user') {
         this.password = await bcryptjs.hash((this.password ?? ''), 10);
+    }
+    if (this.role === 'log_user' || this.role === 'super_admin') {
+        this.type = 'email-password';
     }
     next();
 });

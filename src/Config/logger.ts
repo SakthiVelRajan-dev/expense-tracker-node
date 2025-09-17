@@ -40,7 +40,7 @@ export const getLogger = (type: logType, filename: fileName) => {
     return logger;
 }
 
-export const addLogger = (type: logType, filename: fileName, message: string, data: unknown[]) => {
+export const addLogger = (type: logType, filename: fileName, message: string, data: unknown) => {
     const logger = getLogger(type, filename);
     logger.log(type, message, data);
 }
