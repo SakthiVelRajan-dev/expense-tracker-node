@@ -2,6 +2,7 @@ import 'dotenv/config';
 import { connectDb } from '@Config/db.js';
 import { jwtVerify } from '@Middleware/jwtVerify.js';
 import authenticateRouter from '@Router/Authenticate.js';
+import logRouter from '@Router/LogRoutes.js';
 import cors from 'cors';
 import express from 'express';
 import session from 'express-session';
@@ -9,7 +10,6 @@ import passport from 'passport';
 
 const app = express();
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 await connectDb();
 
 app.use(express.json());
@@ -34,17 +34,16 @@ app.use(passport.session());
 app.use(express.urlencoded({
     extended: true
 }));
-
-
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+ 
 app.use('/auth', authenticateRouter);
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 app.get('/',jwtVerify, (_req, res) => {
     res.status(200).json({
         message: 'You are in dashboard page'
     })
 });
+
+app.use('/log', logRouter);
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on ${process.env.PORT ?? ''}`)

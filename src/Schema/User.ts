@@ -36,7 +36,7 @@ const userSchema = new Schema<IUserDocument, IUserModel>({
 
 userSchema.pre('save', async function (next){
     if (this.isModified('password') && this.type === 'email-password') {
-        this.password = await bcryptjs.hash((this.password ?? '') as string, 10);
+        this.password = await bcryptjs.hash((this.password ?? ''), 10);
     }
     next();
 });

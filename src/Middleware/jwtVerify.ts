@@ -13,8 +13,8 @@ export const jwtVerify =(req:Request, res: Response, next: NextFunction) => {
             return res.status(403).send('Invalid Bearer Token');
         }
         next();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_err) {
+        console.log(_err);
         return res.status(403).send('Invalid Bearer Token');
     }
 }
