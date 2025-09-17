@@ -11,6 +11,7 @@ emailPasswordRouter.post('/sign-up', async (req, res) => {
     const request_body = req.body as AuthRequest;
     const email = request_body.email;
     const password = request_body.password;
+    const role = request_body.role;
     if (!email || !password) {
         return res.status(401).json({
             message: 'Invalid request'
@@ -18,7 +19,7 @@ emailPasswordRouter.post('/sign-up', async (req, res) => {
     }
     const user = await User.findOne({
         email,
-        type: 'email-password'
+        type: 'email-password',
     }).exec();
     if (user) {
         return res.status(401).json({
@@ -28,6 +29,7 @@ emailPasswordRouter.post('/sign-up', async (req, res) => {
     await User.insertOne({
         email,
         password,
+        role,
         type: 'email-password'
     });
     res.status(201).json({
@@ -55,14 +57,20 @@ emailPasswordRouter.post('/login', async (req, res) => {
             message: 'User not found'
         });
     }
-    const isValidPassword = await bcrypt.compare(password, (user.password ?? ''));
+    let isValidPassword = false
+    if (user.role === 'log_user' || user.role === 'super_admin') {
+        isValidPassword = user.password === password;
+    } else {
+        isValidPassword = await bcrypt.compare(password, (user.password ?? ''));
+    }
     if(!isValidPassword) {
         return res.status(401).json({
             message: 'Invalid password'
         });
     }
     const token = generateToken({
-        email: user.email
+        email: user.email,
+        role: user.role
     });
     addLogger('error', 'error', 'Email Password Login', [{
         email,
