@@ -17,6 +17,11 @@ emailPasswordRouter.post('/sign-up', async (req, res) => {
             message: 'Invalid request'
         });
     }
+    if (role === 'super_admin') {
+        return res.status(401).json({
+            message: 'Unable to create an user'
+        })
+    }
     const user = await User.findOne({
         email,
         type: 'email-password',
