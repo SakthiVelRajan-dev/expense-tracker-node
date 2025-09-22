@@ -24,7 +24,7 @@ logRouter.get('/app', async (req, res) => {
     res.status(200).json(JSON.parse(JSON.stringify(log)));
 });
 
-logRouter.get('/custom',  async (req, res) => {
+logRouter.get('/custom', async (req, res) => {
     const logType = req.query.type as logType;
     
     /* in milliseconds */
@@ -44,7 +44,7 @@ logRouter.get('/custom',  async (req, res) => {
     res.status(200).json(JSON.parse(JSON.stringify(log)));
 });
 
-logRouter.get('/error',  async (req, res) => {
+logRouter.get('/error', async (req, res) => {
     const logType = req.query.type as logType;
     
     /* in milliseconds */

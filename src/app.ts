@@ -1,6 +1,8 @@
 import 'dotenv/config';
 import { connectDb } from '@Config/db.js';
-// import { passwordUpdateCron } from '@crons/PasswordUpdateCron.js';
+import { passwordUpdateCron } from '@crons/PasswordUpdateCron.js';
+import { isLogUser } from '@Middleware/isLogUser.js';
+import { isSuperAdminUser } from '@Middleware/isSuperAdminUser.js';
 // import { sendLogPasswordEmail } from '@Mail/password.js';
 import { jwtVerify } from '@Middleware/jwtVerify.js';
 import authenticateRouter from '@Router/Authenticate.js';
@@ -19,7 +21,7 @@ const app = express();
 
 await connectDb();
 
-// passwordUpdateCron();
+passwordUpdateCron();
 
 app.use(express.json());
 
@@ -51,10 +53,10 @@ app.get('/',jwtVerify, (_req, res) => {
     })
 });
 
-app.use('/log', logRouter);
-app.use('/cron', cronRouter);
+app.use('/log', jwtVerify, isLogUser, logRouter);
+app.use('/cron', jwtVerify, isSuperAdminUser,  cronRouter);
 
-app.get('/clear-logs',async (_req, res) => {
+app.get('/clear-logs', jwtVerify, isLogUser, async (_req, res) => {
      const logsDirPath = path.join(process.cwd(), 'src', 'logs');
      
      
@@ -83,7 +85,7 @@ app.get('/clear-logs',async (_req, res) => {
 //     }
 // });
 
-app.use('/expense-types', expenseTypeRouter);
+app.use('/expense-types', jwtVerify, expenseTypeRouter);
 
 app.listen(process.env.PORT, () => {
     console.log(`Server is running on ${process.env.PORT ?? ''}`)

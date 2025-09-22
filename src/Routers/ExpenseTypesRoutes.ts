@@ -1,12 +1,11 @@
 import { AddExpenseType } from '@interface/request.js';
 import { ExpenseType } from '@interface/schema.js';
-import { jwtVerify } from '@Middleware/jwtVerify.js';
 import ExpenseTypeTable from '@Schema/ExpenseTypes.js';
 import express from 'express';
 
 const expenseTypeRouter = express.Router();
 
-expenseTypeRouter.get('/', jwtVerify , async (req, res) => {
+expenseTypeRouter.get('/', async (req, res) => {
     const offset = +(req.query.offset ?? '0');
     const limit = +(req.query.limit ?? '0');
     const expenseTypes = ExpenseTypeTable.find().select('name description _id').lean();
@@ -23,7 +22,7 @@ expenseTypeRouter.get('/', jwtVerify , async (req, res) => {
     });
 });
 
-expenseTypeRouter.post('/add', jwtVerify, async (req, res) => {
+expenseTypeRouter.post('/add', async (req, res) => {
     const tokenDetail = req.session.tokenDetail;
     if (!tokenDetail) {
         return res.status(401).send('Invalid session');
@@ -43,7 +42,7 @@ expenseTypeRouter.post('/add', jwtVerify, async (req, res) => {
     })
 });
 
-expenseTypeRouter.delete('/:id', jwtVerify, async (req, res) => {
+expenseTypeRouter.delete('/:id', async (req, res) => {
     const id = req.params.id;
     const tokenDetail = req.session.tokenDetail;
     if (!id) {
