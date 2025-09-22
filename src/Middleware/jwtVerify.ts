@@ -1,7 +1,8 @@
+import { IUser } from '@interface/schema.js';
 import { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken';
 
-export const jwtVerify =(req:Request, res: Response, next: NextFunction) => {
+export const jwtVerify = (req:Request, res: Response, next: NextFunction) => {
     try {
         const token = req.header('Authorization') ?? '';
         if (!token) {
@@ -12,6 +13,13 @@ export const jwtVerify =(req:Request, res: Response, next: NextFunction) => {
         if (!isValidToken) {
             return res.status(403).send('Invalid Bearer Token');
         }
+        const tokenDetail = jwt.decode(token.replace('Bearer ', '')) as {
+            email: string,
+            id: string;
+            role:IUser['role'];
+        };
+        req.session.tokenDetail = tokenDetail;
+        req.session.save()
         next();
     } catch (_err) {
         console.log(_err);

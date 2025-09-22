@@ -16,9 +16,11 @@
           "@Middleware/*": ["src/Middleware/*"],
           "@Router/*": ["src/Routers/*"],
           "@Schema/*": ["src/Schema/*"],
-          "@utils/*": ["src/utils/*"]
+          "@utils/*": ["src/utils/*"],
+          "@crons/*": ["src/Crons/*"],
+          "@Mail/*": ["src/Mail/*"]
         }
       },
-      "include": ["src/**/*"],
+      "include": ["src/**/*", "src/app.ts"],
       "exclude": ["node_modules"]
     }

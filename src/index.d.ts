@@ -1,5 +1,7 @@
 // In src/types/express/index.d.ts
 
+import { IUser } from '@interface/schema.ts';
+import 'express-session';
 import { Profile } from 'passport-google-oauth20';
 
 // This declaration merging will add the properties from the Google Profile
@@ -7,5 +9,16 @@ import { Profile } from 'passport-google-oauth20';
 declare global {
   namespace Express {
     export type User = Profile
+  }
+}
+
+declare module 'express-session' {
+  interface SessionData {
+    // Define your custom properties here
+    tokenDetail: {
+      email: string;
+      id: string;
+      role: IUser['role'];
+    };
   }
 }
