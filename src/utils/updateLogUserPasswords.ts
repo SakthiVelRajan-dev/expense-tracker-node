@@ -5,7 +5,6 @@ import User from '@Schema/User.js';
 import { generateRandomPassword } from './generatePassword.js';
 
 export const updateLogUsersPasswords = async () => {
-    const randomPassword = generateRandomPassword();
     const emailUsers = (process.env.SUPER_ADMIN_USER?.split(',') ?? []).map(item => item.trim());
     const users = await User.find({
         email: {$in: emailUsers},
@@ -14,9 +13,10 @@ export const updateLogUsersPasswords = async () => {
     addLogger('info', 'app', 'users List', users);
     users.forEach((val) => {
         void (async () => {
-            val.password = randomPassword
+            const randomPassword = generateRandomPassword();
+            val.password = randomPassword;
             await val.save();
-            sendLogPasswordEmail(randomPassword);
+            sendLogPasswordEmail(randomPassword, val.email);
         })();
     })
 }
