@@ -70,6 +70,7 @@ emailPasswordRouter.post('/login', async (req, res) => {
     }
     const token = generateToken({
         email: user.email,
+        id: user._id,
         role: user.role
     });
     addLogger('error', 'error', 'Email Password Login', [{

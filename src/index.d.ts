@@ -17,7 +17,8 @@ declare module 'express-session' {
     // Define your custom properties here
     tokenDetail: {
       email: string;
-      role: IUser['role']
+      id: string;
+      role: IUser['role'];
     };
   }
 }

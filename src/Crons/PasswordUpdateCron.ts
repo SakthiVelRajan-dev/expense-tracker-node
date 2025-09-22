@@ -1,13 +1,18 @@
 import { addLogger } from '@Config/logger.js';
+import { updateLogUsersPasswords } from '@utils/updateLogUserPasswords.js';
+import { updateSuperAdminPasswords } from '@utils/updateSuperAdminPasswords.js';
 import cron from 'node-cron';
 
 export const passwordUpdateCron = () => {
-    cron.schedule('*/10 * * * *', () => {
-        console.log('Running a task every 10 minutes');
-        addLogger('info', 'app', 'Scheduler is running', {
-            date: new Date()
+    cron.schedule('0 0 * * *', async () => {
+        addLogger('info', 'app', 'Password update cron started for', {
+            date: new Date().toLocaleDateString()
         })
-        // Add your task logic here
+        await updateSuperAdminPasswords();
+        await updateLogUsersPasswords();
+        addLogger('info', 'app', 'Password update cron ended for', {
+            date: new Date().toLocaleDateString()
+        })
     }, {
         name: 'Password Update Cron',
     })
