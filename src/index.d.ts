@@ -18,6 +18,7 @@ declare module 'express-session' {
     tokenDetail: {
       email: string;
       id: string;
+      is_email_verified: boolean;
       role: IUser['role'];
     };
   }

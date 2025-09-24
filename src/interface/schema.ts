@@ -13,6 +13,7 @@ export interface ExpenseTypes extends Document, ExpenseType {};
 
 export interface IUser extends Document {
   email: string;
+  is_email_verified: boolean;
   name?: string;
   password?: string;
   role: UserType;

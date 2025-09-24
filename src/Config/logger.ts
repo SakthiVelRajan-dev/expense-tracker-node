@@ -13,7 +13,7 @@ export type logType ='debug' | 'error' | 'info' | 'warn';
 
 export type SortOrder = 'asc' | 'desc';
 
-type fileName = 'app' | 'custom' | 'error';
+type fileName = 'app' | 'cron-error' | 'custom' | 'error';
 
 export const getLogger = (type: logType, filename: fileName) => {
     const logger = createLogger({

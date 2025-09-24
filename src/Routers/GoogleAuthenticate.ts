@@ -16,21 +16,26 @@ googleAuthRouter.get('/callback', passport.authenticate('google', {
     failureRedirect: '/login',
 }), async (req, res) => {
     const req_user = req.user as Profile;
+    let response;
     const isUserExist = await User.findOne({
         email: req_user._json.email,
         type: 'oAuth'
     }).exec();
     if (!isUserExist) {
-        const user = new User({
+        response =await User.insertOne({
             email: req_user._json.email,
+            is_email_verified: true,
             name: req_user._json.name,
             password: '',
+            role: 'user',
             type: 'oAuth'
         });
-        await user.save();
     }
     const token:string =  generateToken({
-        email: req_user._json.email
+        email: req_user._json.email,
+        id: response?._id ?? isUserExist?._id,
+        is_email_verified: true,
+        role: 'user'
     });
     res.redirect(`${process.env.FRONT_END_URL ?? ''}/?token=${token}`);
 })

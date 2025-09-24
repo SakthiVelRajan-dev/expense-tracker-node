@@ -1,5 +1,6 @@
 import 'dotenv/config';
 import { connectDb } from '@Config/db.js';
+import { clearExpiredOTPCron } from '@crons/ClearExpiredOTPCron.js';
 import { passwordUpdateCron } from '@crons/PasswordUpdateCron.js';
 import { isLogUser } from '@Middleware/isLogUser.js';
 import { isSuperAdminUser } from '@Middleware/isSuperAdminUser.js';
@@ -12,6 +13,7 @@ import logRouter from '@Router/LogRoutes.js';
 // import User from '@Schema/User.js';
 import cors from 'cors';
 import express from 'express';
+import { rateLimit } from 'express-rate-limit';
 import session from 'express-session';
 import fs from 'fs-extra';
 import passport from 'passport';
@@ -22,6 +24,23 @@ const app = express();
 await connectDb();
 
 passwordUpdateCron();
+clearExpiredOTPCron();
+
+const appRateLimit = rateLimit({
+    handler: (req,res, next, option) => {
+        res.status(option.statusCode).json({
+            message: option.message as string
+        })
+    },
+    limit: 100,
+    standardHeaders: true,
+    validate: {
+        xForwardedForHeader: false
+    },
+    windowMs: 10 * 60 * 1000 // handle 100 request for 10 minutes
+});
+
+app.use(appRateLimit);
 
 app.use(express.json());
 
